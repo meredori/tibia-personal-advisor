@@ -2,7 +2,14 @@
 
 This project is the Tibia Personal Advisor.
 
-Primary rule: this is an advisory tool only. Never add gameplay automation, client scraping, memory reading, macroing, or input automation.
+Before every task, read and follow:
+
+- docs/PRODUCT_SPEC.md
+- docs/ARCHITECTURE.md
+- docs/AGENT_WORKFLOW.md
+- docs/SAFETY_BOUNDARIES.md
+
+Primary rule: this is an advisory tool only. Never add gameplay automation, client scraping, memory reading, macroing, unattended play behavior, or input automation.
 
 Development model:
 - Work only on the assigned issue.
@@ -10,7 +17,9 @@ Development model:
 - Do not change files outside the requested scope unless necessary.
 - If you find unrelated issues, document them as follow-up work instead of fixing them in this PR.
 - Preserve manual/static fallback paths.
+- Stay in the declared layer/module scope and impact level.
 - Feature modules must not call external APIs directly.
+- Do not bypass shared services.
 - Shared services and domain models require explicit scope.
 
 Testing:
@@ -21,6 +30,8 @@ Testing:
 PR requirements:
 - Summary
 - Scope
+- Layer
+- Impact Level
 - Files changed
 - Tests run
 - Known limitations

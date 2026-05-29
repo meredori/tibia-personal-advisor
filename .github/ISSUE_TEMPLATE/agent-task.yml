@@ -45,13 +45,23 @@ body:
     validations:
       required: true
   - type: textarea
-    id: tests
+    id: meaningful_tests_required
     attributes:
-      label: Tests Required
-      description: Meaningful tests only.
+      label: Meaningful Tests Required
+      description: List behavior and contract tests required for this task.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Required contracts, services, or prerequisite tasks.
     validations:
       required: true
   - type: textarea
     id: followups
     attributes:
-      label: Known Follow-Up Work
+      label: Follow-Up Work
+      description: Out-of-scope findings that should become separate tasks.
+    validations:
+      required: true
