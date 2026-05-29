@@ -1,0 +1,30 @@
+name: Task Gate
+
+on:
+  issues:
+    types: [opened, labeled, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check issue layer labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          labels=$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json labels --jq '.labels[].name')
+          echo "$labels"
+
+          # Manual version for first pass:
+          # Only layer:01-scaffold may be status:ready until changed.
+          if echo "$labels" | grep -q "status:ready"; then
+            if ! echo "$labels" | grep -q "layer:01-scaffold"; then
+              gh issue edit "$ISSUE_NUMBER" --repo "$REPO" --remove-label "status:ready" --add-label "status:blocked"
+              gh issue comment "$ISSUE_NUMBER" --repo "$REPO" --body "Blocked by task gate: only layer:01-scaffold is currently unlocked."
+            fi
+          fi

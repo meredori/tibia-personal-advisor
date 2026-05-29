@@ -1,0 +1,57 @@
+name: Agent Task
+description: Scoped implementation task for Copilot/Codex agents
+title: "[Agent Task]: "
+labels: ["status:backlog"]
+body:
+  - type: input
+    id: layer
+    attributes:
+      label: Layer
+      placeholder: "layer:01-scaffold"
+    validations:
+      required: true
+  - type: input
+    id: module
+    attributes:
+      label: Module
+      placeholder: "Budget Dashboard / Activity Database / Shared Services"
+    validations:
+      required: true
+  - type: input
+    id: impact
+    attributes:
+      label: Impact Level
+      placeholder: "impact:1-isolated"
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What should be changed?
+    validations:
+      required: true
+  - type: textarea
+    id: must_not_touch
+    attributes:
+      label: Must Not Touch
+      description: Files, layers, or modules that are out of scope.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Tests Required
+      description: Meaningful tests only.
+    validations:
+      required: true
+  - type: textarea
+    id: followups
+    attributes:
+      label: Known Follow-Up Work
