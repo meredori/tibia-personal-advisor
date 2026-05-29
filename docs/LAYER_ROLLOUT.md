@@ -1,304 +1,150 @@
 # Layer Rollout and Unlock Criteria
 
 ## Purpose
-This document translates the architecture into a practical implementation sequence. It defines what must be complete at each layer before the next layer's work becomes ready, and distinguishes parallel-safe work from coordination-required work.
+
+This document maps the repository's implementation order across layers, defines what "Layer 1 complete enough to unlock Layer 2" means in repository terms, and clarifies which work types remain blocked until lower-layer contracts are in place.
+
+For layer definitions and responsibilities, see [docs/ARCHITECTURE.md](ARCHITECTURE.md).
+For task scheduling and parallel-safe rules, see [docs/AGENT_WORKFLOW.md](AGENT_WORKFLOW.md).
+For the task gate that enforces these criteria, see `.github/workflows/task-gate.yml`.
+
+---
 
 ## Layer Order
-The architecture defines 7 layers in this order:
 
-1. Data Source Layer
-2. Normalization Layer
-3. Domain Model Layer
-4. Shared Services Layer
-5. Feature Modules Layer
-6. Recommendation Layer
-7. UI/Notification Layer
+Layers must be built from the bottom up. Higher layers depend on contracts that lower layers define. Work should not begin on a layer until the unlock criteria for the layer below it are met.
 
-Work should generally progress from lower contracts to higher feature behavior.
+Layer 1 is a project-management phase (repository scaffold) that precedes the seven architecture implementation layers. Layers 2–8 correspond to the architecture layers defined in [docs/ARCHITECTURE.md](ARCHITECTURE.md) in order.
 
-## Current Status
-**Currently unlocked layer:** Layer 1 - Repository foundation / scaffold
+| Layer | Name | Summary |
+|---|---|---|
+| Layer 1 | Repository Scaffold | Foundation docs, repository structure, task gate, and placeholder contracts |
+| Layer 2 | Data Source Layer | Provider adapters, raw fetch, source metadata, and cache-aware behavior |
+| Layer 3 | Normalization Layer | Convert provider payloads to shared shapes; attach confidence and freshness metadata |
+| Layer 4 | Domain Model Layer | Canonical business entities and stable contracts |
+| Layer 5 | Shared Services Layer | Cross-module orchestration, scoring, personalization, and provider routing |
+| Layer 6 | Feature Modules Layer | Product features built on shared services and domain contracts |
+| Layer 7 | Recommendation Layer | Ranked recommendation assembly from scored activities and constraints |
+| Layer 8 | UI/Notification Layer | Presentation, manual inputs, user settings, and browser/PWA notifications |
 
-**Active layer label:** `layer:01-scaffold`
+---
 
-This is a meta-layer for planning, documentation, and repository infrastructure. It sits below the 7 architecture layers and must establish the foundation before any application code work begins.
+## Currently Unlocked Layer
 
-## Layer 1: Repository Foundation / Scaffold
+**Layer 1 — Repository Scaffold** is the only currently unlocked layer.
 
-### Scope
-Repository planning, documentation, issue workflow, and development infrastructure.
+The task gate allows `status:ready` only on issues labeled `layer:01-scaffold`. All other layer issues are automatically moved to `status:blocked`.
 
-### Unlock Criteria for Layer 2 (Data Source Layer)
-Layer 2 work becomes ready when:
+---
 
-- [ ] Core architecture documentation is complete and reviewed
-- [ ] Agent workflow rules are documented and enforced
-- [ ] Product specification establishes scope boundaries
-- [ ] Layer rollout sequence is documented (this document)
-- [ ] Repository README provides clear guidance for contributors
-- [ ] Issue workflow and task-gate behavior are defined
-- [ ] Development environment setup is documented
-- [ ] Safety boundaries are documented
+## Layer 1 Unlock Criteria
 
-### Parallel-Safe Work in Layer 1
-Work in Layer 1 is generally parallel-safe when agents:
+Layer 2 becomes available when all of the following are true for Layer 1:
 
-- Work on different documentation files
-- Update separate sections of repository guides
-- Create isolated planning documents
-- Improve CI/workflow definitions independently
+- [ ] `README.md` is replaced with the repository guide (`docs/` links, product description, local commands, safety boundary statement)
+- [ ] `docs/PRODUCT_SPEC.md` exists and describes the product vision, intended user, core features, and scope boundaries
+- [ ] `docs/ARCHITECTURE.md` exists and defines all seven layers and their responsibilities
+- [ ] `docs/AGENT_WORKFLOW.md` exists and defines the agent task model, impact levels, PR rules, and must-follow contract rules
+- [ ] `docs/SAFETY_BOUNDARIES.md` exists and states the primary safety rule, forbidden behaviors, and allowed behaviors
+- [ ] `docs/WORKFLOW.md` exists and documents the label model, task gate, required issue fields, required PR fields, and scope control rules
+- [ ] `docs/LAYER_ROLLOUT.md` exists and defines the layer order and unlock criteria
+- [ ] `.github/workflows/task-gate.yml` enforces the Layer 1 gate and blocks non-scaffold issues from reaching `status:ready`
+- [ ] `.github/workflows/ci.yml` runs lint and tests on PRs targeting `main`
+- [ ] `.github/ISSUE_TEMPLATE/agent-task.yml` captures all required issue fields
+- [ ] `.github/pull_request_template.md` captures all required PR fields including the safety checklist
+- [ ] All `layer:01-scaffold` issues with `status:ready` have been implemented and merged
 
-### Coordination-Required Work in Layer 1
-Coordination is required for:
+---
 
-- Changes to architecture layer definitions
-- Modifications to agent workflow rules
-- Updates to product scope boundaries
-- Changes to task-gate logic or layer labels
+## Layer 2 Unlock Criteria
 
-## Layer 2: Data Source Layer
+Layer 3 becomes available when all of the following are true for Layer 2:
 
-### Dependencies
-- Layer 1 complete (repository foundation established)
+- [ ] At least one provider adapter exists with a defined interface (source identifier, last-updated timestamp, confidence level, freshness window, normalized output payload, error state)
+- [ ] Provider families are stubbed or partially implemented (character, world, house, news/event, market/bazaar, manual input)
+- [ ] Raw response retrieval and source metadata capture are in place
+- [ ] Cache-aware fetch behavior is defined
 
-### Scope
-Provider adapters for public APIs, websites, and manual input. Raw response retrieval, source metadata capture, and cache-aware fetch behavior.
+---
 
-### Unlock Criteria for Layer 3 (Normalization Layer)
-Layer 3 work becomes ready when:
+## Layer 3 Unlock Criteria
 
-- [ ] Provider interface contracts are defined
-- [ ] Source metadata shape is established
-- [ ] Cache strategy interface is defined
-- [ ] Error state contracts are defined
-- [ ] At least one provider family has a defined contract (character, world, house, news, market, or manual input)
+Layer 4 becomes available when all of the following are true for Layer 3:
 
-### Parallel-Safe Work in Layer 2
-- Implementing different provider families (character, world, house, etc.)
-- Adding new providers to an existing provider family
-- Improving cache behavior within a single provider
+- [ ] Source-specific payloads are converted to shared internal shapes
+- [ ] Fallback and merge rules are defined
+- [ ] Confidence, freshness, and source metadata are attached to all normalized outputs
+- [ ] Consistent normalized output contracts are exposed and tested
+- [ ] No feature module calls an external API directly
 
-### Coordination-Required Work in Layer 2
-- Changing provider interface contracts
-- Modifying source metadata shape
-- Altering cache strategy interfaces
-- Changing error state contracts
+---
 
-## Layer 3: Normalization Layer
+## Layer 4 Unlock Criteria
 
-### Dependencies
-- Layer 2 (Data Source Layer) contracts defined
+Layer 5 becomes available when all of the following are true for Layer 4:
 
-### Scope
-Convert source-specific payloads to shared internal shapes. Apply fallback and merge rules. Attach confidence/freshness/source metadata.
+- [ ] Domain entities (`Activity`, `Goal`, `Upgrade`, `CharacterState`, `BudgetBucket`, `DataPoint`) are defined as stable contracts
+- [ ] Domain contracts are tested for interface stability
+- [ ] No shared service or feature module depends on provider-specific payload shapes
 
-### Unlock Criteria for Layer 4 (Domain Model Layer)
-Layer 4 work becomes ready when:
+---
 
-- [ ] Normalization output shape contracts are defined
-- [ ] Confidence metadata schema is established
-- [ ] Freshness metadata schema is established
-- [ ] Fallback and merge rule patterns are defined
-- [ ] At least one provider family has a working normalizer
+## Layer 5 Unlock Criteria
 
-### Parallel-Safe Work in Layer 3
-- Building normalizers for different provider families
-- Improving merge rules for a specific data type
-- Enhancing confidence calculations for isolated data sources
+Layer 6 becomes available when all of the following are true for Layer 5:
 
-### Coordination-Required Work in Layer 3
-- Changing normalized output contracts
-- Modifying confidence/freshness metadata schemas
-- Altering fallback/merge rule patterns
-- Changing how multiple sources are combined
+- [ ] Shared services exist for economy, scoring, personalization, events, and notifications
+- [ ] Provider selection and fallback routing is implemented
+- [ ] Confidence/freshness interpretation is handled in shared services, not in feature modules
+- [ ] All shared service interfaces are tested
 
-## Layer 4: Domain Model Layer
+---
 
-### Dependencies
-- Layer 3 (Normalization Layer) contracts defined
+## Layer 6 Unlock Criteria
 
-### Scope
-Define canonical business entities and contracts. Keep model semantics stable across features. Protect module contracts from provider churn.
+Layer 7 becomes available when all of the following are true for Layer 6:
 
-### Unlock Criteria for Layer 5 (Shared Services Layer)
-Layer 5 work becomes ready when:
+- [ ] At least one feature module is fully implemented using shared services and domain contracts
+- [ ] Manual/static fallback paths are preserved in all feature modules
+- [ ] Feature module tests validate behavior and contracts
 
-- [ ] Core domain entities are defined (Activity, Goal, Upgrade, CharacterState, BudgetBucket, DataPoint)
-- [ ] Entity relationships are documented
-- [ ] Contract stability guarantees are established
-- [ ] Model evolution rules are defined
+---
 
-### Parallel-Safe Work in Layer 4
-- Defining separate domain entities with no shared dependencies
-- Adding optional fields to existing entities (with defaults)
-- Documenting entity usage patterns
+## Layer 7 Unlock Criteria
 
-### Coordination-Required Work in Layer 4
-- Changing core entity contracts
-- Modifying entity relationships
-- Altering contract semantics
-- Removing or renaming entity fields
+Layer 8 becomes available when all of the following are true for Layer 7:
 
-## Layer 5: Shared Services Layer
+- [ ] Recommendation output includes ranked options and rationale
+- [ ] Low-confidence and stale input warnings are surfaced in recommendation output
+- [ ] Recommendation behavior is tested
 
-### Dependencies
-- Layer 4 (Domain Model Layer) core entities defined
+---
 
-### Scope
-Cross-module business logic and orchestration. Provider selection and fallback routing. Confidence/freshness interpretation. Economy, scoring, personalization, events, and notifications.
+## Parallel-Safe Work Within a Layer
 
-### Unlock Criteria for Layer 6 (Feature Modules Layer)
-Layer 6 work becomes ready when:
+Within a given layer, tasks may run in parallel when they:
 
-- [ ] Provider selection service interface is defined
-- [ ] Confidence/freshness interpretation rules are established
-- [ ] Core shared service contracts are defined (economy, scoring, events)
-- [ ] Service-to-service dependency rules are documented
+- Work in different modules without shared contract changes
+- Depend only on stable, unchanged contracts
+- Do not edit shared service internals or shared model schemas
 
-### Parallel-Safe Work in Layer 5
-- Implementing new shared services with no dependencies on other services
-- Enhancing existing services without changing contracts
+Each issue specifies which other tasks it is parallel-safe with. Refer to the issue description before scheduling parallel work.
 
-### Coordination-Required Work in Layer 5
-- Changing shared service contracts
-- Modifying cross-service orchestration patterns
-- Altering provider selection/fallback logic
-- Changing confidence/freshness interpretation rules
+---
 
-## Layer 6: Feature Modules Layer
+## Work That Remains Blocked
 
-### Dependencies
-- Layer 5 (Shared Services Layer) contracts defined
-- Domain Model contracts stable
+The following work types are blocked until the indicated layer is unlocked:
 
-### Scope
-Implement product features using shared services and domain contracts. Keep feature logic modular and independently evolvable.
-
-### Unlock Criteria for Layer 7 (Recommendation Layer)
-Layer 7 work becomes ready when:
-
-- [ ] At least two feature modules are implemented
-- [ ] Feature modules successfully consume shared services
-- [ ] Feature module contracts are stable
-- [ ] Feature module output shapes are defined
-
-### Parallel-Safe Work in Layer 6
-- Building different feature modules (Session Planner, Upgrade Planner, Budget Dashboard, Activity List, Reminders, Market Watch)
-- Enhancing existing feature modules without changing their contracts
-
-### Coordination-Required Work in Layer 6
-- Changing feature module contracts
-- Modifying how features consume shared services
-- Altering feature output shapes
-
-## Layer 7: Recommendation Layer
-
-### Dependencies
-- Layer 6 (Feature Modules Layer) with stable contracts
-
-### Scope
-Combine scored activities, constraints, and preferences into recommendations. Return ranked options and rationale. Surface uncertainty warnings from low-confidence data.
-
-### Unlock Criteria for Layer 8 (UI/Notification Layer)
-Layer 8 work becomes ready when:
-
-- [ ] Recommendation ranking algorithm is defined
-- [ ] Recommendation output contract is established
-- [ ] Rationale generation rules are defined
-- [ ] Uncertainty warning logic is implemented
-
-### Parallel-Safe Work in Layer 7
-- Improving ranking algorithms
-- Enhancing rationale generation
-- Adding new recommendation strategies
-
-### Coordination-Required Work in Layer 7
-- Changing recommendation output contracts
-- Modifying core ranking behavior
-- Altering how recommendations surface uncertainty
-
-## Layer 8: UI/Notification Layer
-
-### Dependencies
-- Layer 7 (Recommendation Layer) with stable contracts
-
-### Scope
-Present recommendations, plans, reminders, and explanations. Collect manual inputs and user settings. Deliver optional browser/PWA notifications.
-
-### Parallel-Safe Work in Layer 8
-- Building different UI views for separate features
-- Improving presentation of isolated components
-- Adding new notification types
-
-### Coordination-Required Work in Layer 8
-- Changing how UI consumes recommendation contracts
-- Modifying manual input collection patterns
-- Altering notification delivery behavior
-
-## Coordination Patterns
-
-### When to Wait for Coordination
-Wait for explicit coordination and review when changes touch:
-
-- Any contract that crosses layer boundaries
-- Shared services used by multiple modules
-- Domain models referenced by multiple features
-- Provider interfaces used by multiple normalizers
-- Recommendation scoring behavior
-- Cross-module state flow
-- Data migration requirements
-
-### When Parallel Work Is Safe
-Parallel implementation is safe when:
-
-- Working in different modules within the same layer
-- Depending only on stable, unchanged contracts
-- Avoiding shared service internals or shared model schemas
-- Changes are additive and backward-compatible
-
-## Impact Level Mapping
-
-### Impact 1: Isolated Module Change
-- Usually parallel-safe within the same layer
-- Low downstream risk
-
-### Impact 2: Module Logic Change
-- Requires module tests and contract validation
-- May need coordination if module contract changes
-
-### Impact 3: Shared Service Change
-- High risk
-- Always requires coordination
-- Needs dependent module validation
-
-### Impact 4: Domain Model/Contract Change
-- Very high risk
-- Always requires coordination
-- Needs coordinated updates and migration planning
-
-### Impact 5: System Behavior Change
-- Highest risk
-- Always requires coordination and explicit approval
-- Needs broad regression review
-
-## Task Gate Enforcement
-The task-gate workflow enforces layer unlocking:
-
-- Currently, only issues labeled `layer:01-scaffold` may receive `status:ready`
-- Issues for higher layers will be automatically blocked
-- When Layer 1 unlock criteria are met, the task gate will be updated to unlock Layer 2
-- This pattern continues for each subsequent layer
-
-## Follow-Up Actions
-Once Layer 1 criteria are satisfied:
-
-1. Update task-gate.yml to unlock `layer:02-data-source`
-2. Create the next batch of issues for Layer 2 only
-3. Do not create issues for higher layers until their dependencies are met
-4. Update this document's "Current Status" section as layers unlock
-
-## References
-- docs/ARCHITECTURE.md - Layer definitions and responsibilities
-- docs/AGENT_WORKFLOW.md - Parallel-safe vs coordination-required rules
-- docs/PRODUCT_SPEC.md - Product scope boundaries
-- .github/workflows/task-gate.yml - Current layer enforcement logic
+| Blocked Work | Unlocks At |
+|---|---|
+| Provider adapter implementation | Layer 2 |
+| Normalization contract definitions | Layer 3 |
+| Domain entity definitions | Layer 4 |
+| Shared service implementation | Layer 5 |
+| Feature module implementation | Layer 6 |
+| Recommendation assembly | Layer 7 |
+| UI and notification implementation | Layer 8 |
+| Database schema design | Layer 4+ |
+| External API integration | Layer 2+ |
+| Application deployment configuration | Layer 6+ |
