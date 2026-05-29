@@ -46,9 +46,9 @@ Issues assigned to Copilot carry `agent:copilot`.
 
 The repository enforces a Layer-based task gate through `.github/workflows/task-gate.yml`.
 
-**Current rule:** Only `layer:01-scaffold` issues may carry `status:ready`. All other layer issues are automatically moved to `status:blocked` when labeled `status:ready`.
+**Current rule:** Only issues with the label configured as `UNLOCKED_LAYER_LABEL` in `.github/workflows/task-gate.yml` may carry `status:ready`. All other layer issues are automatically moved to `status:blocked` when labeled `status:ready`.
 
-This prevents work on higher layers before the current layer is sufficiently complete. When the unlock criteria for Layer 1 are met (see [docs/LAYER_ROLLOUT.md](LAYER_ROLLOUT.md)), the gate will be updated to allow the next layer.
+This prevents work on higher layers before the current layer is sufficiently complete. When unlock criteria are met (see [docs/LAYER_ROLLOUT.md](LAYER_ROLLOUT.md)), update `UNLOCKED_LAYER_LABEL` to advance the gate without rewriting workflow logic.
 
 ---
 
