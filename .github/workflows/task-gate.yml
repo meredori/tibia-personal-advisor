@@ -26,8 +26,8 @@ jobs:
 
           # Only issues in $UNLOCKED_LAYER_LABEL may remain status:ready.
           if echo "$labels" | grep -q "status:ready"; then
-            if ! echo "$labels" | grep -q "$UNLOCKED_LAYER_LABEL"; then
+            if ! echo "$labels" | grep -qF "$UNLOCKED_LAYER_LABEL"; then
               gh issue edit "$ISSUE_NUMBER" --repo "$REPO" --remove-label "status:ready" --add-label "status:blocked"
-              gh issue comment "$ISSUE_NUMBER" --repo "$REPO" --body "Blocked by task gate: only $UNLOCKED_LAYER_LABEL is currently unlocked."
+              gh issue comment "$ISSUE_NUMBER" --repo "$REPO" --body "Blocked by task gate: only ${UNLOCKED_LAYER_LABEL} is currently unlocked."
             fi
           fi
