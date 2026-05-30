@@ -89,7 +89,6 @@ Explicitly out of scope in this phase:
 - Service implementation
 - UI implementation
 - Database schema design
-- Issue breakdown generation
 
 ## Success Criteria
 The product succeeds when it consistently helps the player make better short-session choices with lower stress, while preserving safety-first behavior and long-term progress.

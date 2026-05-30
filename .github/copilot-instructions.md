@@ -12,10 +12,10 @@ Before every task, read and follow:
 Primary rule: this is an advisory tool only. Never add gameplay automation, client scraping, memory reading, macroing, unattended play behavior, or input automation.
 
 Development model:
-- Work only on the assigned issue.
+- Work only on the assigned task/request.
 - Keep PRs small and focused.
 - Do not change files outside the requested scope unless necessary.
-- If you find unrelated issues, document them as follow-up work instead of fixing them in this PR.
+- If you find unrelated problems, document them as follow-up work instead of fixing them in this PR.
 - Preserve manual/static fallback paths.
 - Stay in the declared layer/module scope and impact level.
 - Feature modules must not call external APIs directly.

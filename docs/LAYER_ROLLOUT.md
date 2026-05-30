@@ -6,7 +6,6 @@ This document maps the repository's implementation order across layers, defines 
 
 For layer definitions and responsibilities, see [docs/ARCHITECTURE.md](ARCHITECTURE.md).
 For task scheduling and parallel-safe rules, see [docs/AGENT_WORKFLOW.md](AGENT_WORKFLOW.md).
-For the task gate that enforces these criteria, see `.github/workflows/task-gate.yml`.
 
 ---
 
@@ -33,7 +32,7 @@ Layer 0 is a project-management phase (repository scaffold) that precedes the se
 
 **Layer 0 — Repository Scaffold** is the only currently unlocked layer.
 
-The task gate allows `status:ready` only on issues labeled with the current `UNLOCKED_LAYER_LABEL` value in `.github/workflows/task-gate.yml` (currently `layer:01-scaffold`). All other layer issues are automatically moved to `status:blocked`.
+Unlock progression is currently maintained manually through team review and PR acceptance rather than issue-label automation.
 
 ---
 
@@ -46,13 +45,11 @@ Layer 1 becomes available when all of the following are true for Layer 0:
 - [ ] `docs/ARCHITECTURE.md` exists and defines all seven layers and their responsibilities
 - [ ] `docs/AGENT_WORKFLOW.md` exists and defines the agent task model, impact levels, PR rules, and must-follow contract rules
 - [ ] `docs/SAFETY_BOUNDARIES.md` exists and states the primary safety rule, forbidden behaviors, and allowed behaviors
-- [ ] `docs/WORKFLOW.md` exists and documents the label model, task gate, required issue fields, required PR fields, and scope control rules
+- [ ] `docs/WORKFLOW.md` exists and documents local build-first workflow, required PR fields, and scope control rules
 - [ ] `docs/LAYER_ROLLOUT.md` exists and defines the layer order and unlock criteria
-- [ ] `.github/workflows/task-gate.yml` enforces the Layer 0 gate and blocks non-scaffold issues from reaching `status:ready`
 - [ ] `.github/workflows/ci.yml` runs lint and tests on PRs targeting `main`
-- [ ] `.github/ISSUE_TEMPLATE/agent-task.yml` captures all required issue fields
 - [ ] `.github/pull_request_template.md` captures all required PR fields including the safety checklist
-- [ ] All `layer:01-scaffold` issues with `status:ready` have been implemented and merged
+- [ ] Layer 0 scaffold acceptance checklist is complete and approved in PR review
 
 ---
 
@@ -129,6 +126,8 @@ Within a given layer, tasks may run in parallel when they:
 - Do not edit shared service internals or shared model schemas
 
 Each issue specifies which other tasks it is parallel-safe with. Refer to the issue description before scheduling parallel work.
+
+Each task should explicitly note which other tasks it is parallel-safe with before scheduling concurrent work.
 
 ---
 
