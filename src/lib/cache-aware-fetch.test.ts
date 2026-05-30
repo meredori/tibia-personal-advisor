@@ -129,3 +129,65 @@ test("returns failure with stale data when refresh fails", async () => {
     expiresAt: 600,
   });
 });
+
+test("force refresh bypasses fresh cache entries", async () => {
+  let fetchCount = 0;
+  const { cache, getStoredEntry } = createMemoryCache({
+    value: { payload: "cached" },
+    fetchedAt: 1_000,
+    expiresAt: 2_000,
+  });
+
+  const result = await fetchWithCache({
+    cache,
+    ttlMs: 600,
+    now: () => 1_500,
+    forceRefresh: true,
+    fetchFresh: async () => {
+      fetchCount += 1;
+      return { payload: "fresh" };
+    },
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.source, "fresh");
+  assert.deepEqual(result.data, { payload: "fresh" });
+  assert.equal(fetchCount, 1);
+  assert.deepEqual(getStoredEntry(), {
+    value: { payload: "fresh" },
+    fetchedAt: 1_500,
+    expiresAt: 2_100,
+  });
+});
+
+test("force refresh returns stale data when refresh fails", async () => {
+  const { cache, getStoredEntry } = createMemoryCache({
+    value: { payload: "cached" },
+    fetchedAt: 1_000,
+    expiresAt: 2_000,
+  });
+
+  const error = new Error("network failed");
+  const result = await fetchWithCache({
+    cache,
+    ttlMs: 600,
+    now: () => 1_500,
+    forceRefresh: true,
+    fetchFresh: async () => {
+      throw error;
+    },
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error, error);
+  assert.deepEqual(result.stale, {
+    data: { payload: "cached" },
+    fetchedAt: 1_000,
+    expiresAt: 2_000,
+  });
+  assert.deepEqual(getStoredEntry(), {
+    value: { payload: "cached" },
+    fetchedAt: 1_000,
+    expiresAt: 2_000,
+  });
+});
