@@ -33,7 +33,7 @@ Layer 0 is a project-management phase (repository scaffold) that precedes the se
 
 **Layer 0 — Repository Scaffold** is the only currently unlocked layer.
 
-The task gate allows `status:ready` only on issues labeled `layer:01-scaffold`. All other layer issues are automatically moved to `status:blocked`.
+The task gate allows `status:ready` only on issues labeled with the current `UNLOCKED_LAYER_LABEL` value in `.github/workflows/task-gate.yml` (currently `layer:01-scaffold`). All other layer issues are automatically moved to `status:blocked`.
 
 ---
 

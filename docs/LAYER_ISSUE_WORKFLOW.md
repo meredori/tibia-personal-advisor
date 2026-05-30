@@ -10,9 +10,9 @@ Current workflow labels are:
 - `status:ready` — marks work as ready to execute.
 - `status:blocked` — applied by the task gate when readiness rules are violated.
 
-Layer label currently used by the gate:
+Unlocked layer label is configured in `.github/workflows/task-gate.yml`:
 
-- `layer:01-scaffold`
+- `UNLOCKED_LAYER_LABEL` (currently `layer:01-scaffold`)
 
 ## Task Gate Behavior (Current State)
 The `Task Gate` workflow (`.github/workflows/task-gate.yml`) runs on issue events:
@@ -23,12 +23,12 @@ The `Task Gate` workflow (`.github/workflows/task-gate.yml`) runs on issue event
 
 Gate rule currently enforced:
 
-- If an issue has `status:ready` but does **not** have `layer:01-scaffold`, the workflow:
+- If an issue has `status:ready` but does **not** have the label configured as `UNLOCKED_LAYER_LABEL`, the workflow:
   - removes `status:ready`
   - adds `status:blocked`
-  - posts: `Blocked by task gate: only layer:01-scaffold is currently unlocked.`
+  - posts: `Blocked by task gate: only ${UNLOCKED_LAYER_LABEL} is currently unlocked.`
 
-This means only Layer 1 (`layer:01-scaffold`) tasks can remain in `status:ready` right now.
+This means only tasks in the currently unlocked layer label can remain in `status:ready`.
 
 ## Required Agent Task Issue Fields
 The Agent Task issue template (`.github/ISSUE_TEMPLATE/agent-task.yml`) requires:
