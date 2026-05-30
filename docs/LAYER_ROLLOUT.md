@@ -72,7 +72,7 @@ Future Layer 1 implementation issues should use the following default scope unle
 - First public provider family: Character provider
 - Initial public source preference: TibiaData first
 - Initial public source deferrals: direct Tibia.com parsing is fallback/reference-only, and third-party market/bazaar sources are not part of the first public-provider iteration
-- Initial freshness policy: no scheduled polling, on-demand refresh at most once every 15 minutes per character, 15-minute cache TTL on successful responses, and stale labeling after 60 minutes without a successful refresh
+- Initial freshness policy: no scheduled polling, on-demand refresh at most once every 15 minutes per character, treat successful responses as fresh for 15 minutes (not fresh after that), and label data stale after 60 minutes without a successful refresh
 
 ---
 
