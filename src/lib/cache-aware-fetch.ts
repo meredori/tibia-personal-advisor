@@ -39,13 +39,13 @@ export type CacheAwareFetchResult<TValue> =
   | CacheAwareFetchSuccess<TValue>
   | CacheAwareFetchFailure<TValue>;
 
-const isFresh = (entry: CacheEntry<unknown>, nowMs: number): boolean =>
-  entry.expiresAt > nowMs;
+const isFresh = (entry: CacheEntry<unknown>, currentTime: number): boolean =>
+  entry.expiresAt > currentTime;
 
 export const fetchWithCache = async <TValue>(
   options: CacheAwareFetchOptions<TValue>,
 ): Promise<CacheAwareFetchResult<TValue>> => {
-  const now = options.now ?? Date.now;
+  const now = options.now ?? (() => Date.now());
   const cached = await options.cache.get();
 
   if (cached && isFresh(cached, now()) && !options.forceRefresh) {
