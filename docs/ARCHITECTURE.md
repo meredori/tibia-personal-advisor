@@ -26,7 +26,7 @@ Examples of provider families:
 
 Initial Layer 1 public-provider decision:
 
-- The first public provider family is the character provider.
+- The first public provider family is the Character provider.
 - Prefer TibiaData for the first public adapter because it offers Tibia.com-derived character data through a simpler JSON surface.
 - Do not make direct Tibia.com page parsing the first implementation target; keep it as a later fallback/reference option if TibiaData is insufficient.
 - Defer house, world, news/event, and market/bazaar public providers until the initial character-provider contract is in place.
