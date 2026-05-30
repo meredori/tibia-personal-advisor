@@ -1,0 +1,125 @@
+{
+  "version": "v1",
+  "source": {
+    "id": "activity-seed-v1",
+    "type": "manual-static-offline",
+    "lastUpdated": "2026-05-30T00:00:00.000Z",
+    "confidence": "high",
+    "freshnessWindow": "static",
+    "errorState": null
+  },
+  "activities": [
+    {
+      "id": "activity-forest-hunt",
+      "name": "Forest Hunt Session",
+      "kind": "hunt",
+      "goals": ["xp", "profit"],
+      "risk": "low",
+      "durationMinutes": {
+        "min": 30,
+        "max": 90
+      },
+      "requirements": ["supplies-prepared"],
+      "notes": "Manual combat-focused route with low-pressure pacing.",
+      "metadata": {
+        "source": "activity-seed-v1",
+        "lastUpdated": "2026-05-30T00:00:00.000Z",
+        "confidence": "high",
+        "freshnessWindow": "static",
+        "errorState": null
+      }
+    },
+    {
+      "id": "activity-bankroll-farm",
+      "name": "Bankroll Farm Session",
+      "kind": "farm",
+      "goals": ["profit", "supplies"],
+      "risk": "low",
+      "durationMinutes": {
+        "min": 30,
+        "max": 60
+      },
+      "requirements": ["loot-capacity-available"],
+      "notes": "Manual-first safe farming session intended for stable income.",
+      "metadata": {
+        "source": "activity-seed-v1",
+        "lastUpdated": "2026-05-30T00:00:00.000Z",
+        "confidence": "high",
+        "freshnessWindow": "static",
+        "errorState": null
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-restock-supplies",
+      "name": "Restock Supplies",
+      "kind": "maintenance",
+      "estimatedMinutes": 10,
+      "cadence": "before-session",
+      "steps": [
+        "Check potion count",
+        "Check rune count",
+        "Buy missing supplies manually"
+      ],
+      "metadata": {
+        "source": "activity-seed-v1",
+        "lastUpdated": "2026-05-30T00:00:00.000Z",
+        "confidence": "high",
+        "freshnessWindow": "static",
+        "errorState": null
+      }
+    },
+    {
+      "id": "task-stash-loot",
+      "name": "Stash and Review Loot",
+      "kind": "maintenance",
+      "estimatedMinutes": 8,
+      "cadence": "after-session",
+      "steps": [
+        "Deposit collected loot",
+        "Mark notable drops manually",
+        "Review session profit briefly"
+      ],
+      "metadata": {
+        "source": "activity-seed-v1",
+        "lastUpdated": "2026-05-30T00:00:00.000Z",
+        "confidence": "high",
+        "freshnessWindow": "static",
+        "errorState": null
+      }
+    }
+  ],
+  "routines": [
+    {
+      "id": "routine-session-start",
+      "name": "Session Start Routine",
+      "kind": "session",
+      "trigger": "session-start",
+      "tasks": ["task-restock-supplies"],
+      "defaultDurationMinutes": 12,
+      "metadata": {
+        "source": "activity-seed-v1",
+        "lastUpdated": "2026-05-30T00:00:00.000Z",
+        "confidence": "high",
+        "freshnessWindow": "static",
+        "errorState": null
+      }
+    },
+    {
+      "id": "routine-session-end",
+      "name": "Session End Routine",
+      "kind": "session",
+      "trigger": "session-end",
+      "tasks": ["task-stash-loot"],
+      "defaultDurationMinutes": 10,
+      "metadata": {
+        "source": "activity-seed-v1",
+        "lastUpdated": "2026-05-30T00:00:00.000Z",
+        "confidence": "high",
+        "freshnessWindow": "static",
+        "errorState": null
+      }
+    }
+  ]
+}
