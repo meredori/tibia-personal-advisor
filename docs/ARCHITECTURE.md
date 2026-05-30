@@ -35,7 +35,7 @@ Initial freshness guardrails for the first public provider:
 
 - No scheduled background polling in the first iteration; refresh on demand only.
 - Revalidate a given character at most once every 15 minutes.
-- Treat successful public character responses as fresh for 15 minutes.
+- Treat successful public character responses as fresh for 15 minutes (not fresh after that).
 - Mark public character data as stale after 60 minutes without a successful refresh so manual/static fallbacks remain the safe default.
 
 ### 2) Normalization Layer
