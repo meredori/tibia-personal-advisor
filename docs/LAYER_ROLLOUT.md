@@ -65,6 +65,15 @@ Layer 2 becomes available when all of the following are true for Layer 1:
 - [ ] Raw response retrieval and source metadata capture are in place
 - [ ] Cache-aware fetch behavior is defined
 
+### Initial Layer 1 Scope Decision
+
+Future Layer 1 implementation issues should use the following default scope unless a later planning issue explicitly changes it:
+
+- First public provider family: character provider
+- Initial public source preference: TibiaData first
+- Initial public source deferrals: direct Tibia.com parsing is fallback/reference-only, and third-party market/bazaar sources are not part of the first public-provider iteration
+- Initial freshness policy: no scheduled polling, on-demand refresh at most once every 15 minutes per character, 15-minute cache TTL on successful responses, and stale labeling after 60 minutes without a successful refresh
+
 ---
 
 ## Layer 2 Unlock Criteria

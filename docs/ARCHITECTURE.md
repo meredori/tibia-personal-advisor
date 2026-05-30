@@ -24,6 +24,20 @@ Examples of provider families:
 - Market/bazaar provider
 - Manual input provider
 
+Initial Layer 1 public-provider decision:
+
+- The first public provider family is the character provider.
+- Prefer TibiaData for the first public adapter because it offers Tibia.com-derived character data through a simpler JSON surface.
+- Do not make direct Tibia.com page parsing the first implementation target; keep it as a later fallback/reference option if TibiaData is insufficient.
+- Defer house, world, news/event, and market/bazaar public providers until the initial character-provider contract is in place.
+
+Initial freshness guardrails for the first public provider:
+
+- No scheduled background polling in the first iteration; refresh on demand only.
+- Revalidate a given character at most once every 15 minutes.
+- Treat successful public character responses as fresh for 15 minutes.
+- Mark public character data as stale after 60 minutes without a successful refresh so manual/static fallbacks remain the safe default.
+
 ### 2) Normalization Layer
 Responsibilities:
 
